@@ -1,0 +1,16 @@
+{
+  "name": "puertosweb",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "engines": {
+    "node": "0.12.x",
+    "npm": "1.4.x"
+  },
+  "dependencies": {
+    "express": "^4.12.4",
+    "ws": "^0.7.2"
+  }
+}
