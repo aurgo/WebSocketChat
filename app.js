@@ -13,26 +13,34 @@ var web_server = app.listen(app.get('port'), function() {
 
 var clients = new Array();
 
-var WebSocketServer = require('ws').Server 
+var WebSocketServer = require('ws').Server
 var wss = new WebSocketServer({ protocolVersion: 8, port: 8080 });
 
 wss.on('connection', function connection(ws) {
-  //console.log(ws); 
 
   var url = ws.upgradeReq.url.replace('/', '');
-  console.log(url); 
-  clients['ws' + url] = new Array();
-  clients['ws' + url].push(ws.upgradeReq.client);
+
+  if( Object.prototype.toString.call( clients['ws_' + url] ) != '[object Array]' )
+     clients['ws_' + url] = new Array();
+
+  clients['ws_' + url].push(ws);
 
   ws.on('message', function incoming(message) {
-    //console.log(clients);
-    wss.broadcast(message);
-    //ws.send(message);
-    
-    console.log('received: %s', message);
+
+    var js_message = JSON.parse(message);
+
+    if (clients['ws_' + js_message.room] != null)
+    {
+      clients['ws_' + js_message.room].forEach(function each(client) {
+
+        if (client != undefined)
+           client.send(message);
+      });
+
+    }
   });
 
-  ws.send('Hello');
+  ws.send('{"user":"Server","message":"Connected to the server..."}');
 });
 
 

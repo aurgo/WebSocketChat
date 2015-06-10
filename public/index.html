@@ -24,22 +24,34 @@
 <script src="http://code.jquery.com/jquery-1.11.3.js"></script>
 <script>
 
-var url = (prompt("URL:", "ws://localhost:8080") || 'ws://localhost:8080');
+var user = prompt("User: ", "User");
+var room = prompt("Room: ", "room");
 
-var socket = new WebSocket(url /*"ws://localhost:8080"*/, "8");
+document.title = 'Web Socket chat (' + room + ')';
+
+var url = "ws://localhost:8080/" + room;
+
+var socket = new WebSocket(url, "8");
 
 socket.onopen = function() {
         console.log('Connected');
     };
 
 socket.onmessage = function(message) {
-    console.log(message);
-    $('#messages').append($('<li>').text(message.data));
+
+    if (message != undefined && message != null)
+    {
+       console.log("Client <-" + message.data);
+       var js_message = JSON.parse(message.data);
+       console.log(js_message);
+       $('#messages').append($('<li>').text(js_message.user + ": " + js_message.message));
+    }
   };
 
 $('form').submit(function(){
     console.log(socket);
-    socket.send($('#m').val());
+    var message = { room : room, user : user, message : $('#m').val() };
+    socket.send(JSON.stringify(message));
     $('#m').val('');
     return false;
   });
